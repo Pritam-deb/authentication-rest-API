@@ -1,13 +1,19 @@
 import express from "express";
 import bodyParser from "body-parser";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 
+dotenv.config();
+//Route
 import authRoute from "./routes/auth.js";
 
 const app = express();
 const PORT = 5000;
 
+mongoose.connect(process.env.MONGODB_URI, () => console.log("Connected to db"));
+
 app.use(bodyParser.json());
-app.use("/auth", authRoute);
+app.use("/api/users", authRoute);
 
 app.get("/", (req, res) => {
   console.log("Got request from browser!");

@@ -3,7 +3,8 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get("/", (req, res) => {
+router.post("/register", (req, res) => {
+  console.log("recieved a post req");
   res.send("this is  auth page");
 });
 
