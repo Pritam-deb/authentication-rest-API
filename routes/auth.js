@@ -3,7 +3,7 @@ import { Router } from "express";
 import Users from "../model/user.js";
 import bcrypt from "bcrypt";
 
-import { registerValidation } from "../validation.js";
+import { loginValidation, registerValidation } from "../validation.js";
 
 const router = Router();
 
@@ -33,6 +33,24 @@ router.post("/register", async (req, res) => {
 
     console.log(error);
   }
+});
+
+//LOGIN
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  const { error } = loginValidation(req.body);
+  if (error) return res.send(error.details[0].message);
+
+  //check if email exists
+  const userExist = await Users.findOne({ email: req.body.email });
+  if (!userExist) return res.status(400).send("Email is wrong!");
+
+  //check if password is correct
+  const validPassword = await bcrypt.compare(password, userExist.password);
+  if (!validPassword) return res.status(400).send("Invalid Password!!");
+
+  res.status(200).send("Login successful!");
 });
 
 export default router;
