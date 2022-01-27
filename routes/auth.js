@@ -1,26 +1,28 @@
 import express from "express";
 import { Router } from "express";
 import Users from "../model/user.js";
+import bcrypt from "bcrypt";
 
-import Joi from "@hapi/joi";
-
-const schema = Joi.object({
-  name: Joi.string().min(4).required(),
-  email: Joi.string().min(6).required().email(),
-  password: Joi.string().min(8).required(),
-});
+import { registerValidation } from "../validation.js";
 
 const router = Router();
 
 router.post("/register", async (req, res) => {
-  const { error } = schema.validate(req.body);
+  const { name, email, password } = req.body;
+  //Valudate Data
+  const { error } = registerValidation(req.body);
   if (error) return res.send(error.details[0].message);
 
-  const { name, email, password } = req.body;
+  //Check if user in DB
+  const emailExist = await Users.findOne({ email: req.body.email });
+  if (emailExist) return res.status(400).send("Email already exists!");
+
+  //Create  a new user
+  const hashedPassword = await bcrypt.hash(password, 12);
   const user = new Users({
     name: name,
     email: email,
-    password: password,
+    password: hashedPassword,
   });
 
   try {
