@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 //Route
 import authRoute from "./routes/auth.js";
+import postRoute from "./routes/posts.js";
 
 const app = express();
 const PORT = 5000;
@@ -14,6 +15,7 @@ mongoose.connect(process.env.MONGODB_URI, () => console.log("Connected to db"));
 
 app.use(bodyParser.json());
 app.use("/api/users", authRoute);
+app.use("/api/user", postRoute);
 
 app.get("/", (req, res) => {
   console.log("Got request from browser!");
